@@ -90,8 +90,6 @@ export async function performExtraction_F0(
   let totalUrlsScraped = 0;
   let sources: Record<string, string[]> = {};
 
-  const acuc = await getACUCTeam(teamId);
-
   const logger = _logger.child({
     module: "extract",
     method: "performExtraction",
@@ -99,6 +97,8 @@ export async function performExtraction_F0(
     extractId,
     teamId,
   });
+
+  const acuc = await getACUCTeam(teamId);
 
   // If no URLs are provided, generate URLs from the prompt
   if ((!request.urls || request.urls.length === 0) && request.prompt) {
@@ -284,11 +284,6 @@ export async function performExtraction_F0(
 
   // Track schema analysis tokens
   tokenUsage.push(schemaAnalysisTokenUsage);
-
-  // console.log("\nIs Multi Entity:", isMultiEntity);
-  // console.log("\nMulti Entity Keys:", multiEntityKeys);
-  // console.log("\nReasoning:", reasoning);
-  // console.log("\nKey Indicators:", keyIndicators);
 
   let rSchema = reqSchema;
   if (isMultiEntity && reqSchema) {
@@ -492,38 +487,6 @@ export async function performExtraction_F0(
             }
           }
 
-          // console.log(multiEntityCompletion.extract)
-          // if (!multiEntityCompletion.extract?.is_content_relevant) {
-          //   console.log(`Skipping extraction for ${doc.metadata.url} as content is not relevant`);
-          //   return null;
-          // }
-
-          // Update token usage in traces
-          // if (multiEntityCompletion && multiEntityCompletion.numTokens) {
-          //   const totalLength = docs.reduce(
-          //     (sum, doc) => sum + (doc.markdown?.length || 0),
-          //     0,
-          //   );
-          //   docs.forEach((doc) => {
-          //     if (doc.metadata?.sourceURL) {
-          //       const trace = urlTraces.find(
-          //         (t) => t.url === doc.metadata.sourceURL,
-          //       );
-          //       if (trace && trace.contentStats) {
-          //         trace.contentStats.tokensUsed = Math.floor(
-          //           ((doc.markdown?.length || 0) / totalLength) *
-          //             (multiEntityCompletion?.numTokens || 0),
-          //         );
-          //       }
-          //     }
-          //   });
-          //  }
-
-          // if (multiEntityCompletion.extract && multiEntityCompletion.extract.extraction_confidence < 3) {
-          //   console.log(`Skipping extraction for ${doc.metadata.url} as confidence is too low (${multiEntityCompletion.extract.extraction_confidence})`);
-          //   return null;
-          // }
-
           return null;
         } catch (error) {
           logger.error(`Failed to process document.`, {
@@ -680,13 +643,6 @@ export async function performExtraction_F0(
         is_successful: false,
         error: "Failed to scrape documents",
       });
-      return {
-        success: false,
-        error: error.message,
-        extractId,
-        urlTrace: urlTraces,
-        totalUrlsScraped,
-      };
     }
 
     if (docsMap.size == 0) {
@@ -784,11 +740,11 @@ export async function performExtraction_F0(
 
   let finalResult = reqSchema
     ? await mixSchemaObjects_F0(
-        reqSchema,
-        singleAnswerResult,
-        multiEntityResult,
-        logger.child({ method: "mixSchemaObjects" }),
-      )
+      reqSchema,
+      singleAnswerResult,
+      multiEntityResult,
+      logger.child({ method: "mixSchemaObjects" }),
+    )
     : singleAnswerResult || multiEntityResult;
 
   // Tokenize final result to get token count

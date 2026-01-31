@@ -29,6 +29,7 @@ const configSchema = z.object({
   BULL_AUTH_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   OPENAI_BASE_URL: z.string().optional(),
+  GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
   OPENROUTER_API_KEY: z.string().optional(),
   LLAMAPARSE_API_KEY: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),

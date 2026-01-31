@@ -224,16 +224,6 @@ export async function generateCompletions_F0({
         prompt: options.prompt + (markdown ? `\n\nData:${markdown}` : ""),
         temperature: options.temperature ?? 0,
         system: options.systemPrompt,
-        providerOptions: {
-          google: {
-            labels: {
-              functionId: metadata.functionId ?? "unspecified",
-              extractId: metadata.extractId ?? "unspecified",
-              scrapeId: metadata.scrapeId ?? "unspecified",
-              teamId: metadata.teamId,
-            },
-          },
-        },
         experimental_telemetry: {
           isEnabled: true,
           functionId: metadata.functionId,
@@ -241,15 +231,15 @@ export async function generateCompletions_F0({
             teamId: metadata.teamId,
             ...(metadata.extractId
               ? {
-                  langfuseTraceId: "extract:" + metadata.extractId,
-                  extractId: metadata.extractId,
-                }
+                langfuseTraceId: "extract:" + metadata.extractId,
+                extractId: metadata.extractId,
+              }
               : {}),
             ...(metadata.scrapeId
               ? {
-                  langfuseTraceId: "scrape:" + metadata.scrapeId,
-                  scrapeId: metadata.scrapeId,
-                }
+                langfuseTraceId: "scrape:" + metadata.scrapeId,
+                scrapeId: metadata.scrapeId,
+              }
               : {}),
           },
         },
@@ -321,7 +311,7 @@ export async function generateCompletions_F0({
           try {
             JSON.parse(text);
             return text;
-          } catch (_) {}
+          } catch (_) { }
         }
 
         const { text: fixedText } = await generateText({
@@ -329,16 +319,6 @@ export async function generateCompletions_F0({
           prompt: `Fix this JSON that had the following error: ${error}\n\nOriginal text:\n${text}\n\nReturn only the fixed JSON, no explanation.`,
           system:
             "You are a JSON repair expert. Your only job is to fix malformed JSON and return valid JSON that matches the original structure and intent as closely as possible. Do not include any explanation or commentary - only return the fixed JSON. Do not return it in a Markdown code block, just plain JSON.",
-          providerOptions: {
-            google: {
-              labels: {
-                functionId: metadata.functionId ?? "unspecified",
-                extractId: metadata.extractId ?? "unspecified",
-                scrapeId: metadata.scrapeId ?? "unspecified",
-                teamId: metadata.teamId,
-              },
-            },
-          },
           experimental_telemetry: {
             isEnabled: true,
             functionId: metadata.functionId,
@@ -346,15 +326,15 @@ export async function generateCompletions_F0({
               teamId: metadata.teamId,
               ...(metadata.extractId
                 ? {
-                    langfuseTraceId: "extract:" + metadata.extractId,
-                    extractId: metadata.extractId,
-                  }
+                  langfuseTraceId: "extract:" + metadata.extractId,
+                  extractId: metadata.extractId,
+                }
                 : {}),
               ...(metadata.scrapeId
                 ? {
-                    langfuseTraceId: "scrape:" + metadata.scrapeId,
-                    scrapeId: metadata.scrapeId,
-                  }
+                  langfuseTraceId: "scrape:" + metadata.scrapeId,
+                  scrapeId: metadata.scrapeId,
+                }
                 : {}),
             },
           },
@@ -378,16 +358,6 @@ export async function generateCompletions_F0({
           console.error(error);
         },
       }),
-      providerOptions: {
-        google: {
-          labels: {
-            functionId: metadata.functionId ?? "unspecified",
-            extractId: metadata.extractId ?? "unspecified",
-            scrapeId: metadata.scrapeId ?? "unspecified",
-            teamId: metadata.teamId,
-          },
-        },
-      },
       experimental_telemetry: {
         isEnabled: true,
         functionId: metadata.functionId,
@@ -395,15 +365,15 @@ export async function generateCompletions_F0({
           teamId: metadata.teamId,
           ...(metadata.extractId
             ? {
-                langfuseTraceId: "extract:" + metadata.extractId,
-                extractId: metadata.extractId,
-              }
+              langfuseTraceId: "extract:" + metadata.extractId,
+              extractId: metadata.extractId,
+            }
             : {}),
           ...(metadata.scrapeId
             ? {
-                langfuseTraceId: "scrape:" + metadata.scrapeId,
-                scrapeId: metadata.scrapeId,
-              }
+              langfuseTraceId: "scrape:" + metadata.scrapeId,
+              scrapeId: metadata.scrapeId,
+            }
             : {}),
         },
       },

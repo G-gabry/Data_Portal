@@ -3,7 +3,7 @@ import { config } from "../config";
 import { createOllama } from "ollama-ai-provider";
 import { anthropic } from "@ai-sdk/anthropic";
 import { groq } from "@ai-sdk/groq";
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { fireworks } from "@ai-sdk/fireworks";
 import { deepinfra } from "@ai-sdk/deepinfra";
@@ -19,7 +19,17 @@ type Provider =
   | "fireworks"
   | "deepinfra"
   | "vertex";
-const defaultProvider: Provider = config.OLLAMA_BASE_URL ? "ollama" : "openai";
+console.log("GOOGLE_GENERATIVE_AI_API_KEY set:", !!config.GOOGLE_GENERATIVE_AI_API_KEY);
+console.log("OPENAI_API_KEY set:", !!config.OPENAI_API_KEY);
+
+const defaultProvider: Provider = config.GOOGLE_GENERATIVE_AI_API_KEY
+  ? "google"
+  : config.OLLAMA_BASE_URL
+    ? "ollama"
+    : "openai";
+
+console.log("Selected defaultProvider:", defaultProvider);
+console.log("Selected MODEL_NAME:", config.MODEL_NAME);
 
 const providerList: Record<Provider, any> = {
   openai: createOpenAI({
@@ -31,7 +41,9 @@ const providerList: Record<Provider, any> = {
   }),
   anthropic, //ANTHROPIC_API_KEY
   groq, //GROQ_API_KEY
-  google, //GOOGLE_GENERATIVE_AI_API_KEY
+  google: createGoogleGenerativeAI({
+    apiKey: config.GOOGLE_GENERATIVE_AI_API_KEY,
+  }), //GOOGLE_GENERATIVE_AI_API_KEY
   openrouter: createOpenRouter({
     apiKey: config.OPENROUTER_API_KEY,
   }),
@@ -45,11 +57,11 @@ const providerList: Record<Provider, any> = {
     location: "global",
     googleAuthOptions: config.VERTEX_CREDENTIALS
       ? {
-          credentials: JSON.parse(atob(config.VERTEX_CREDENTIALS)),
-        }
+        credentials: JSON.parse(atob(config.VERTEX_CREDENTIALS)),
+      }
       : {
-          keyFile: "./gke-key.json",
-        },
+        keyFile: "./gke-key.json",
+      },
   }),
 };
 
