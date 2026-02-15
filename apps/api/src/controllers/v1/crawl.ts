@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { exec } from "child_process";
 import { config } from "../../config";
 import { v7 as uuidv7 } from "uuid";
 import {
@@ -160,6 +161,21 @@ export async function crawlController(
   await saveCrawl(id, sc);
 
   await markCrawlActive(id);
+
+  // Proactive AWS Lambda Trigger to wake up the Fargate engine
+  // This is non-blocking (fire and forget)
+  exec(
+    'aws lambda invoke --function-name firecrawl-fargate-scaler --invocation-type Event --region us-east-1 --payload "{\\"action\\":\\"warmup\\"}" lambda_invoke_output.json',
+    (error, stdout, stderr) => {
+      if (error) {
+        logger.warn("Failed to trigger warmup lambda", {
+          error: error.message,
+        });
+      } else {
+        logger.debug("Triggered warmup lambda", { stdout });
+      }
+    },
+  );
 
   await _addScrapeJobToBullMQ(
     {
